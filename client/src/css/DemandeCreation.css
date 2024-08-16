@@ -1,0 +1,53 @@
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+  }
+  
+  .custom-table th, .custom-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+  }
+  
+  .custom-table th {
+    background-color: #f4f4f4;
+  }
+  
+  .small-profile-img {
+    width: 10%;
+    height:10%;
+    border-radius: 50%;
+  }
+  
+  .profile-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+  }
+  
+  .action-button {
+    padding: 6px 12px;
+    margin-right: 8px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .action-button.validate {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .action-button.refuse {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .action-button:hover {
+    opacity: 0.8;
+  }
+ 
+
+

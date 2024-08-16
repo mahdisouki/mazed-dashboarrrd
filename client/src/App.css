@@ -1,0 +1,133 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Nunito";
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  background-color: #f2f7ff;
+}
+
+label {
+  color: #000;
+  font-size: 20px;
+  font-family: "Nunito";
+}
+
+input {
+  margin-bottom: 1rem;
+}
+
+.app-container {
+  display: flex;
+}
+
+.sidebar-container {
+  flex: 0 0 auto;
+}
+
+.content-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 60px;
+  
+}
+
+.card {
+  margin-right: 70px;
+  background-color: #fff;
+}
+.card .card-content {
+  position: relative;
+}
+.card .card-header ~ .card-body {
+  padding-top: 0;
+}
+.card .card-content {
+  position: relative;
+  background-color: #fff;
+  border: none;
+}
+.card .card-body {
+  padding: 1.5rem;
+  background-color: #fff;
+}
+
+.card-header {
+  background-color: #fff;
+  border: none;
+  margin-bottom: 2rem;
+  padding: 30px;
+}
+
+.card-footer {
+  background-color: #fff;
+  border: none;
+}
+
+.new-price {
+  font-family: "Nunito";
+}
+
+.modal-footer {
+  margin-top: 20px;
+}
+
+td, th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.stats-icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  background-color: #F9B853;
+  color: #fff;
+  padding: 20px;
+  border-radius: 20%;
+  justify-content: center;
+}
+
+.stats-text, .stats-number {
+  display: flex;
+  text-align: center;
+  font-size: 16px;
+}
+
+.card-stats {
+  display: flex;
+  margin-bottom: 5rem;
+  margin-top: 2rem;
+}
+
+.fa-trash {
+  color: #F9B853;
+}
+
+.btn-primary {
+  background-color:#F9B853;
+  border: #000;
+}
+
+.btn-primary:hover {
+  background-color: #F9B853;
+}
+
+hr {
+  border: none;
+  height: 5px;
+  background-color: #F9B853;
+}
+
+.imgtable {
+  width: 45px;
+  height: 45px;
+}
