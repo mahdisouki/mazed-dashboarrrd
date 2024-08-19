@@ -25,6 +25,8 @@ export const DataProvider = ({children}) => {
   const [echeances , setEcheances] = useState();
   const [winners , setWinners] = useState();
   const [notifications , setNotifications] = useState();
+  const [me , setMe] = useState();
+  const [demandeCat , setDemandeCat] = useState();
   useEffect(()=>{
     const getAllAcheteur = async() =>{
       try {
@@ -101,7 +103,7 @@ export const DataProvider = ({children}) => {
     }
     const getAllRoles = async()=>{
       try {
-        const res = await axios.get('http://localhost:8081/admin/allRoles', {headers : {Authorization: `Bearer ${token}`}})
+        const res = await axios.get('http://localhost:8081/admin/role/allRoles', {headers : {Authorization: `Bearer ${token}`}})
         console.log("all roles:" , res.data)
         setRoles(res.data)
       } catch (error) {
@@ -198,7 +200,25 @@ export const DataProvider = ({children}) => {
         console.log(error , token)
       }
     }
-getAllTermes()
+    const getMe = async()=>{
+      try {
+        const res = await axios.get('http://localhost:8081/api/auth/user/me', {headers : {Authorization: `Bearer ${token}`}})
+        console.log("my account:" , res.data)
+        setMe(res.data)
+      } catch (error) {
+        console.log(error , token)
+      }
+    }
+    const getAllDemandeCategories = async()=>{
+      try {
+        const res = await axios.get('http://localhost:8081/api/demandes', {headers : {Authorization: `Bearer ${token}`}})
+        console.log("All demandes:" , res.data)
+        setDemandeCat(res.data)
+      } catch (error) {
+        console.log(error , token)
+      }
+    }
+// getAllTermes()
 getAllVendeur()
 getAllAcheteur()
 getAllUsers();
@@ -218,6 +238,8 @@ getAllDemandesTransfert();
 getAllEcheances();
 getAllWinners();
 getAllNotifications();
+getMe();
+getAllDemandeCategories();
   } , [token])
   
    const state ={
@@ -238,7 +260,9 @@ getAllNotifications();
     demandesT : demandeT,
     echeances : echeances,
     winners : winners,
-    notifications: notifications
+    notifications: notifications,
+    Me : me,
+    demandes: demandeCat
 
 
   }

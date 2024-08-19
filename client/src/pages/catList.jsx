@@ -12,10 +12,11 @@ function CategoryList() {
   const { t } = useTranslation();
   const state = useContext(GlobalState);
   const categories = state.Categories;
+  const user = state.Me
   const [isMobile, setIsMobile] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [category, setcategory] = useState({nomCategorie:"" , icon:""});
+  const [category, setcategory] = useState({nomCategorie:"" , icon:"" , id : "" , alUne:"" , statusCategorie:""});
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -254,21 +255,45 @@ const aluneFalse = async(id)=>{
     console.log(error)
   }
 }
-const updateCat = async(id)=>{
- 
-  try {
-      const res = await axios.put(`http://localhost:8081/api/categories/${id}` ,category ,{headers : {Authorization: `Bearer ${token}`} } );
-  } catch (error) {
-    console.log(error)
+const updateCat = async (id, e) => {
+  e.preventDefault();
+  
+  if (user.roleAdmin.name === "Super admin") {
+    try {
+      const res = await axios.put(
+        `http://localhost:8081/api/categories/${id}`, 
+        category, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log(res.data);
+    } catch (error) {
+      console.error("Error updating category:", error);
+    }
+  } else {
+    try {
+      console.log(category)
+      const res = await axios.post(
+        `http://localhost:8081/api/demandes/createModificationCategoryRequest`, 
+        category, 
+        { 
+          params: { oldCategoryId: id },
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      console.log(res.data);
+    } catch (error) {
+      console.error("Error creating modification request:", error);
+    }
   }
-}
+};
+
 
 
 
 
   const handleEdit = (cat) => {
     setSelectedCategory(cat);
-    setcategory({...category , nomCategorie:cat.nomCategorie , icon:cat.icon})
+    setcategory({...category , nomCategorie:cat.nomCategorie , icon:cat.icon , id:cat.id , alUne:cat.alUne , statusCategorie:cat.statusCategorie})
     setShowModal(true);
   };
 

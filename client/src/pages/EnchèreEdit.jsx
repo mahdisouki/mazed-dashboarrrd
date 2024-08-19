@@ -128,7 +128,7 @@ function EnchèreEdit(props) {
           <div>
             <div className="card">
               <div className="card-header">
-                <h2 className="new-price">{t("Création De Enchere")}</h2>
+                <h2 className="new-price">{t("edit De Enchere")}</h2>
               </div>
               <div className="card-content">
                 <div className="card-body">
