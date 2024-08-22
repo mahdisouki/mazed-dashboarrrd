@@ -69,7 +69,7 @@ import DemandeEnchereAdmin from './pages/DemandeEnchereAdmin';
 import DemandeCatAdmin from './pages/DemandeCatAdmin';
 import { Echeance } from './pages/Echeance';
 import Winners from './pages/Winners';
-
+import Notification from './pages/Notification';
 const App = () => {
   const [token, setToken] = useState(null);
   const authToken= Cookies.get('token');
@@ -181,6 +181,7 @@ const App = () => {
               <Route path='/DemandeCatAdmin' element={<DemandeCatAdmin />} />
               <Route path='/echeances' element={<Echeance/>}/>
               <Route path='/winners' element={<Winners/>}/>
+              <Route path='/notification' element={<Notification/>}/>
             </Routes>
           </div>
         )}

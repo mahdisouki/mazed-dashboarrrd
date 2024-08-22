@@ -75,7 +75,7 @@ const DemandeProduitAdmin = () => {
 const traiterDemandeCategory = async(demandeId , status)=>{
   try {
     console.log(token , demandeId ,status )
-    const res = await axios.post(`http://192.168.0.118:8081/api/demandes/traiterDemandeModificationCategorie?demandeId=${demandeId}&statusDemande=${status}`,{}, {headers : {Authorization: `Bearer ${token}`}})
+    const res = await axios.post(`http://localhost:8081/api/demandes/traiterDemandeModificationCategorie?demandeId=${demandeId}&statusDemande=${status}`,{}, {headers : {Authorization: `Bearer ${token}`}})
     console.log(res.data)
   } catch (error) {
     console.log(error)

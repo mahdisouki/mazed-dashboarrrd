@@ -377,6 +377,8 @@ const resources = {
       "Nom de societe": "Company name",
       "Type vendeurs": "Seller type",
       "Date de Naissance": "Birth date",
+      "ACTIVER":"ACTIVATE",
+      "En_Cours":"Progress"
     }
   },
   fr: {
@@ -1151,6 +1153,15 @@ const resources = {
       "Stock": "المخزون",
       "Demande de Création": "الطلب على إنتاج",
       "Nom de societe": "إسم الشركة",
+      "ACTIVER":"مفعل ",
+      "DESACTIVER":"معطل",
+      "Activer" : "تفعيل",
+      "status":"الحالة",
+      "Brouillon":"مسودة" ,
+      "Ouverte": "مفتوح",
+      "En_Cours": "قيد التنفيذ" ,
+      "Terminée": "منتهي " ,
+      "Annulée": "تم إلغاؤه" ,
     }
   }
 };

@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "../css/DetailEnchere.css";
 import { Link } from "react-router-dom";
 import "../css/DetailEnchere.css";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { Modal, Button, Form } from "react-bootstrap";
-
-
+import { GlobalState } from "../GlobalState";
+import axios from "axios";
+import Cookies from "js-cookie"
 function DetailEnchere(props) {
-  const participants = [...props.selectedItem.participantNonSignéIds , ...props.selectedItem.participantSignéIds] 
+  const token = Cookies.get('token')
+  const state = useContext(GlobalState);
+  const users = state.Users
+  const participants = [...props.selectedItem.participantNonSignéIds , ...props.selectedItem.participantSignéIds]
+  const filteredUsers = users.filter(user => participants.includes(user.id));
   const [isMobile, setIsMobile] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [additionalTables, setAdditionalTables] = useState([]);
@@ -21,7 +26,7 @@ function DetailEnchere(props) {
   const { t } = useTranslation();
 
   useEffect(() => {
-    console.log(props)
+    console.log(participants , filteredUsers)
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1212);
     };
@@ -38,6 +43,19 @@ function DetailEnchere(props) {
   const deleteItem = () => {
     // Implement your delete logic here
   };
+
+
+    const approverUser = async(enchereId , userId) =>{
+      try {
+        const res = await axios.post(`http://localhost:8081/api/bid/approve/${enchereId}/${userId}`, {} , {headers:{Authorization: `Bearer ${token}`}})
+        console.log(res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+
+
 
   const handleAddTable = () => {
     setAdditionalTables([
@@ -221,7 +239,7 @@ function DetailEnchere(props) {
                 {isMobile ? (
                   <table className="table" id="table2">
                     <tbody>
-                      {participants && participants.map((item=>(
+                      {filteredUsers && filteredUsers.map((item=>(
                         <>
                         <tr>
                         <td>{t("Nom de famille")}</td>
@@ -263,10 +281,11 @@ function DetailEnchere(props) {
                         <th>{t("Numéro du téléphone")}</th>
                         <th>{t("Nombre d'encheres y liées")}</th>
                         <th>{t("Détail")}</th>
+                        <th>{t("approuver")}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {participants && participants.map((item)=>(
+                      {filteredUsers && filteredUsers.map((item)=>(
                         <tr>
                           <td>{item.nomFamille}</td>
                           <td>{item.prenom}</td>
@@ -276,6 +295,12 @@ function DetailEnchere(props) {
                           <td>
                             <i className="fa-solid fa-eye font-medium-1"></i>
                           </td>
+                          {!props.selectedItem.participantSignéIds.includes(item.id)?(
+                            <td>
+                            <i onClick={()=>approverUser(props.selectedItem.id,item.id)} className="fa-solid fa-check font-medium-1"></i>
+                          </td>
+                          ):(<td>-</td>)}
+                          
                         </tr>
                       ))}
                      

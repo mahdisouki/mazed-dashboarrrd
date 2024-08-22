@@ -4,7 +4,7 @@ import axios from "axios";
 import Cookies from 'js-cookie'
 function QuestionEdit() {
   const token = Cookies.get('token');
-  const [question , setQuestion]= useState({Question:"" ,reponse:""})
+  const [question , setQuestion]= useState({question:"" ,questionAr:"",questionEn:"", reponse:"" , reponseAr:"" ,reponseEn:"" })
   const { t } = useTranslation();
   const editQuestion = async(id)=>{
     try {

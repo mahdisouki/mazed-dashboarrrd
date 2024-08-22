@@ -143,11 +143,11 @@ const Navbar = ({ username }) => {
               <i className="fas fa-user-circle me-2"></i> {t("Profile")}
             </Link>
           </div>
-          <div className="notification-item">
+          {/* <div className="notification-item">
             <Link to="/Messagerie">
               <i className="fa-solid fa-comments me-2"></i> {t("Messagerie")}
             </Link>
-          </div>
+          </div> */}
           <div className="notification-item" onClick={handleLanguageToggle}>
             <i className="fas fa-globe me-2"></i> {t("Languages")}
           </div>

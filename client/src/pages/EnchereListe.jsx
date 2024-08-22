@@ -11,9 +11,10 @@ import DetailEnchere from "./DetailEnchere";
 import axios from "axios";
 import EnchèreEdit from "./EnchèreEdit";
 import Cookies from 'js-cookie'
+import Configuration from "./configuration";
 function EnchereListe() {
   const token = Cookies.get('token')
-  const { t } = useTranslation();
+  const { t , i18n } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
   const [steps , setSteps] = useState(0)
   const [selectedItem , setSelectedItem] = useState();
@@ -32,7 +33,20 @@ function EnchereListe() {
     // Clean up the event listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  useEffect(()=>{
 
+  },[i18n.language])
+  const getEnchereName = (cat) => {
+    switch (i18n.language) {
+      case 'ar':
+        return cat.nomProduitAr || '';
+      case 'en':
+        return cat.nomProduitEn || '';
+      case 'fr':
+      default:
+        return cat.nomProduit || '';
+    }
+  };
   const deleteItem = async(id) => {
     try {
       const res = await axios.delete(`http://localhost:8081/api/bid/${id}` , {headers : {Authorization: `Bearer ${token}`}});
@@ -215,7 +229,7 @@ function EnchereListe() {
                  <>
                  <tr>
                  <td>{t("Produit")}</td>
-                 <td className="text-bold-500">{item.nomProduit}</td>
+                 <td className="text-bold-500">{getEnchereName(item)}</td>
                </tr>
                <tr>
                  <td>{t("Prix")}</td>
@@ -247,7 +261,7 @@ function EnchereListe() {
                              ?"btn btn-primary":"btn btn-dark"
                        }
                      >
-                       {item.status}
+                       {t(item.status)}
                      </a>
                  </td>
                </tr>
@@ -275,9 +289,9 @@ function EnchereListe() {
                  <td>{t("Modifier")}</td>
                  <td>
                    <div className="buttons">
-                     <Link to="/EnchèreEdit" className="btn">
+                     <a onClick={()=>{localStorage.setItem("idEnchereConf" , item.id);setSteps(3)}} className="btn">
                        <i className="fa-solid fa-pen-to-square"></i>
-                     </Link>
+                     </a>
                    </div>
                  </td>
                </tr>
@@ -314,7 +328,7 @@ function EnchereListe() {
              <tbody>
                {encheres && encheres.map((item)=>(
                    <tr>
-                   <td className="text-bold-500">{item.nomProduit}</td>
+                   <td className="text-bold-500">{getEnchereName(item)}</td>
                    <td>{item.prixMazedOnline}</td>
                    <td className="text-bold-500">{item.nombreParticipantréel}</td>
                    <td className="text-bold-500">{item.createdAt.split('T')[0]}</td>
@@ -331,15 +345,15 @@ function EnchereListe() {
                              ?"btn btn-primary":"btn btn-dark"
                        }
                      >
-                       {item.status}
+                       {t(item.status)}
                      </a>
                    </td>
                    <td>
                     {item.status === "Brouillon"?(
                       <div className="buttons">
-                       <Link to="/configuration" className="btn">
+                       <a onClick={()=>{localStorage.setItem("idEnchereConf" , item.id);setSteps(3)}}className="btn">
                          <i className="fas fa-cog"></i>
-                       </Link>
+                       </a>
                      </div>
                     ) : ( <i className="fas fa-check"></i>)}
                      
@@ -386,6 +400,9 @@ function EnchereListe() {
 ) }
 {steps === 2 && (
   <EnchèreEdit selectedItem={selectedItem}/>
+)}
+{steps ===3 &&(
+  <Configuration selectedItem={selectedItem}/>
 )}
 </>
   );

@@ -9,14 +9,14 @@ import axios from "axios";
 import Cookies from "js-cookie"
 function CategoryList() {
   const token = Cookies.get('token')
-  const { t } = useTranslation();
+  const { t , i18n } = useTranslation();
   const state = useContext(GlobalState);
   const categories = state.Categories;
   const user = state.Me
   const [isMobile, setIsMobile] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [category, setcategory] = useState({nomCategorie:"" , icon:"" , id : "" , alUne:"" , statusCategorie:""});
+  const [category, setcategory] = useState({nomCategorieArabe:"" ,nomCategorieEnglish:"",nomCategorie:"" , icon:"" , id : "" , alUne:"" , statusCategorie:""});
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -37,6 +37,20 @@ function CategoryList() {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  useEffect(()=>{
+
+  },[i18n.language])
+  const getCategoryName = (cat) => {
+    switch (i18n.language) {
+      case 'ar':
+        return cat.nomCategorieArabe || '';
+      case 'en':
+        return cat.nomCategorieEnglish || '';
+      case 'fr':
+      default:
+        return cat.nomCategorie || '';
+    }
+  };
 
   const handleDeleteModal = (catId) => {
     Swal.fire({
@@ -220,20 +234,41 @@ const deleteC = async(id) =>{
     });
   };
   const banC = async(id) =>{
-    try {
-      const res = await axios.patch(`http://localhost:8081/api/categories/${id}/deactivate` ,{headers : {Authorization: `Bearer ${token}`} });
-      console.log(res.data);
-    } catch (error) {
-      console.log(error)
+    if (user.roleAdmin.name === "Super admin") {
+      try {
+        const res = await axios.patch(`http://localhost:8081/api/categories/${id}/deactivate` ,{},{headers : {Authorization: `Bearer ${token}`} });
+        console.log(res.data);
+      } catch (error) {
+        console.log(error)
+      }
+    }else{
+      try {
+        const res = await axios.post(`http://localhost:8081/api/demandes/changerStatutCategorie?categoryId=${id}&newStatus=DESACTIVER` ,{},{headers : {Authorization: `Bearer ${token}`} });
+        console.log(res.data);
+      } catch (error) {
+        console.log(error)
+      }
     }
+   
   }
+
   const unbanC = async(id) =>{
-    try {
-      const res = await axios.patch(`http://localhost:8081/api/categories/${id}/activate` ,{headers : {Authorization: `Bearer ${token}`} });
-      console.log(res.data);
-    } catch (error) {
-      console.log(error)
+    if (user.roleAdmin.name === "Super admin") {
+      try {
+        const res = await axios.patch(`http://localhost:8081/api/categories/${id}/activate` ,{},{headers : {Authorization: `Bearer ${token}`} });
+        console.log(res.data);
+      } catch (error) {
+        console.log(error)
+      }
+    }else{
+      try {
+        const res = await axios.post(`http://localhost:8081/api/demandes/changerStatutCategorie?categoryId=${id}&newStatus=ACTIVER` ,{},{headers : {Authorization: `Bearer ${token}`} });
+        console.log(res.data);
+      } catch (error) {
+        console.log(error)
+      }
     }
+   
   }
  
 const alune = async(id)=>{
@@ -293,7 +328,7 @@ const updateCat = async (id, e) => {
 
   const handleEdit = (cat) => {
     setSelectedCategory(cat);
-    setcategory({...category , nomCategorie:cat.nomCategorie , icon:cat.icon , id:cat.id , alUne:cat.alUne , statusCategorie:cat.statusCategorie})
+    setcategory({...category , nomCategorie:cat.nomCategorie , icon:cat.icon , id:cat.id , alUne:cat.alUne , statusCategorie:cat.statusCategorie , nomCategorieArabe:cat.nomCategorieArabe , nomCategorieEnglish:cat.nomCategorieEnglish})
     setShowModal(true);
   };
 
@@ -315,11 +350,11 @@ const updateCat = async (id, e) => {
             <React.Fragment key={index}>
               <tr>
                 <td>{t("Libellé")}</td>
-                <td>{cat.nomCategorie}</td>
+                <td>{getCategoryName(cat)}</td>
               </tr>
               <tr>
                 <td>{t("status")}</td>
-                <td>{cat.statusCategorie}</td>
+                <td>{t(cat.statusCategorie)}</td>
               </tr>
               <tr>
                 <td>{t("Modifier")}</td>
@@ -397,8 +432,8 @@ const updateCat = async (id, e) => {
         {categories ? (
           categories.map((cat, index) => (
             <tr key={index}>
-              <td className="text-bold-500">{cat.nomCategorie}</td>
-              <td>{cat.statusCategorie}</td>
+              <td className="text-bold-500">{getCategoryName(cat)}</td>
+              <td>{t(cat.statusCategorie)}</td>
               <td>
                 <button className="btn" onClick={() => handleEdit(cat)}>
                 <button className="btn" onClick={() => handleEdit(cat)}>
@@ -494,6 +529,26 @@ const updateCat = async (id, e) => {
                           onChange={e=>setcategory({...category , nomCategorie:e.target.value})}
                           value={category.nomCategorie}
                         />
+                      </div>
+                      
+                        <label htmlFor="email-id-icon">{t("Libellé(arabe)")}</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="email-id-icon"
+                          onChange={e=>setcategory({...category , nomCategorieArabe:e.target.value})}
+                          value={category.nomCategorieArabe}
+                        />
+                      
+                      
+                        <label htmlFor="email-id-icon">{t("Libellé(english)")}</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="email-id-icon"
+                          onChange={e=>setcategory({...category , nomCategorieEnglish:e.target.value})}
+                          value={category.nomCategorieEnglish}
+                        />
                         <input
                           type="file"
                           className="form-control"
@@ -501,7 +556,6 @@ const updateCat = async (id, e) => {
                           onChange={handleImageChange}
                         
                         />
-                      </div>
                     </div>
                    
                   </div>

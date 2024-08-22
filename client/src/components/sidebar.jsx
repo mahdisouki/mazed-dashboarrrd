@@ -304,7 +304,7 @@ const Playground = () => {
                 </MenuItem>
               </SubMenu>
 
-              <SubMenu
+              {/* <SubMenu
                 label={t("Participants")}
                 icon={<i className="fa-solid fa-users"></i>}
               >
@@ -328,7 +328,7 @@ const Playground = () => {
                 >
                   {t("Liste des participants")}
                 </MenuItem>
-              </SubMenu>
+              </SubMenu> */}
               {/* <SubMenu
                 label={t("Vendeurs")}
                 icon={<i className="fa-solid fa-user-clock"></i>}
@@ -521,6 +521,16 @@ const Playground = () => {
               >
                 {t("Tutoriel")}
               </MenuItem>
+              <MenuItem
+              icon={<i class="fa-solid fa-bell"></i>}
+                  component={<Link to="/notification" />}
+                  onClick={() => setActiveLink("/notification")}
+                  style={
+                    activeLink === "/notification" ? menuItemStyles.active : null
+                  }
+                >
+                  {t("Notifications")}
+                </MenuItem>
               <MenuItem
                 icon={<i className="fa-solid fa-right-from-bracket"></i>}
               >

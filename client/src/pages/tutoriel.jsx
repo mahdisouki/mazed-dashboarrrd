@@ -52,6 +52,26 @@ const Modal = ({ t, handleImageChange, tuto, setTuto, addTuto }) => {
                   onChange={(e) => setTuto({ ...tuto, description: e.target.value })}
                 />
               </div>
+              <label htmlFor="description">{t("Description(arabe)")}</label>
+              <div className="form-group">
+                <textarea
+                  id="descriptionAr"
+                  type="text"
+                  placeholder={t("Écrivez ici")}
+                  className="form-control"
+                  onChange={(e) => setTuto({ ...tuto, descriptionAr: e.target.value })}
+                />
+              </div>
+              <label htmlFor="description">{t("Description(englais)")}</label>
+              <div className="form-group">
+                <textarea
+                  id="descriptionEn"
+                  type="text"
+                  placeholder={t("Écrivez ici")}
+                  className="form-control"
+                  onChange={(e) => setTuto({ ...tuto, descriptionEn: e.target.value })}
+                />
+              </div>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
@@ -94,18 +114,22 @@ const ResponsiveTable = ({ tutorials, handleDelete, isMobile }) => {
       {isMobile ? (
         <table className="table">
           <tbody>
-            <tr>
+           {tutorials && tutorials.map((item)=>(
+            <>
+             <tr>
             <td>{t("Image")}</td>
-            <td></td>
+            <td> <img className="imgtable" src={item.file} alt="tuto_image" style={{ width: "auto", height: "150px" }} /></td>
             </tr>
             <tr>
             <td>{t("Ordre")}</td>
-            <td></td>
+            <td>{item.ordre}</td>
             </tr>
             <tr>
             <td>{t("Supprimer")}</td>
-            <td></td>
+            <td>  <i className="fa-solid fa-trash deleteIcon" onClick={() => handleDelete(item.id)}></i></td>
             </tr>
+            </>
+           ))}
           </tbody>
         </table>
       ) : (
@@ -137,7 +161,7 @@ const ResponsiveTable = ({ tutorials, handleDelete, isMobile }) => {
 const Tutoriel = () => {
   const token = Cookies.get('token')
   const { t } = useTranslation();
-  const [tuto, setTuto] = useState({ ordre: 0, description: "", file: "" });
+  const [tuto, setTuto] = useState({ ordre: 0, description: "",descriptionAr:"" ,descriptionEn:"", file: "" });
   const state = useContext(GlobalState);
   const tutorials = state.tutorials;
   const [isMobile, setIsMobile] = useState(false);

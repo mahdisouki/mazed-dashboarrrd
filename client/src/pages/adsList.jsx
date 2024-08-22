@@ -128,14 +128,14 @@ function AdsList() {
                         </Button>
                       </td>
                     </tr>
-                    <tr>
+                    {/* <tr>
                       <td>{t("Editer")}</td>
                       <td>
                         <Button className="btn" onClick={openEditModal}>
                           <i className="fa-solid fa-pen-to-square"></i>
                         </Button>
                       </td>
-                    </tr>
+                    </tr> */}
                     <tr>
                       <td>{t("Supprimer")}</td>
                       <td>
@@ -155,7 +155,7 @@ function AdsList() {
                       <th>{t("Date de publication")}</th>
                       <th>{t("Type")}</th>
                       <th>{t("Voir")}</th>
-                      <th>{t("Editer")}</th>
+                      {/* <th>{t("Editer")}</th> */}
                       <th>{t("Supprimer")}</th>
                     </tr>
                   </thead>
@@ -171,11 +171,11 @@ function AdsList() {
                               <i className="fa-solid fa-eye"></i>
                             </Button>
                           </td>
-                          <td>
+                          {/* <td>
                             <Button className="btn" onClick={openEditModal}>
                               <i className="fa-solid fa-pen-to-square"></i>
                             </Button>
-                          </td>
+                          </td> */}
                           <td>
                             <i className="fa-solid fa-trash deleteIcon" onClick={()=>handleDelete(item.id)}></i>
                           </td>

@@ -49,7 +49,7 @@ function Modal({ t  , id , traiterDemande}) {
               type="button"
               className="btn btn-primary ms-1"
               
-            onClick={()=>traiterDemande(id , "REFUSÉE" ,cause )}>
+            onClick={()=>traiterDemande(id , "REFUSER" ,cause )}>
               <i className="bx bx-check d-block d-sm-none"></i>
               <span className="d-none d-sm-block">{t("Envoyer")}</span>
             </button>
@@ -149,12 +149,12 @@ function TableRow({ userData, onAccept }) {
       <td>{userData.createdAt?.split("T")[0]}</td>
       <td>{userData.typeRecharge}</td>
       <td>
-        <span className={userData.statusDemande==="EN_ATTENTE"?'badge bg-info':userData.statusDemande==="REFUSÉE"?"badge bg-danger":"badge bg-success"}>{userData.statusDemande}</span>
+        <span className={userData.statusDemande==="EN_ATTENTE"?'badge bg-info':userData.statusDemande==="REFUSER"?"badge bg-danger":"badge bg-success"}>{userData.statusDemande}</span>
       </td>
       {userData && userData.statusDemande==="EN_ATTENTE"?(
         <>
         <td>
-        <i className="fa-solid fa-circle-check text-success" onClick={()=>traiterDemande(userData.id , "APPROUVÉE")}></i>
+        <i className="fa-solid fa-circle-check text-success" onClick={()=>traiterDemande(userData.id , "APPROUVER")}></i>
       </td>
       <td>
       

@@ -6,13 +6,14 @@ import axios from "axios";
 import Cookies from 'js-cookie'
 function QuestionList() {
   const token = Cookies.get('token')
-  const { t } = useTranslation();
+  const { t , i18n } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
   const [modalType, setModalType] = useState('');
-  const [question , setQuestion] = useState({question:"" , reponse:""});
+  const [question , setQuestion]= useState({question:"" ,questionAr:"",questionEn:"", reponse:"" , reponseAr:"" ,reponseEn:"" })
   const state = useContext(GlobalState);
   const questions = state.Questions
+  console.log(questions)
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1212);
@@ -26,10 +27,35 @@ function QuestionList() {
     // Clean up the event listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  useEffect(()=>{
+
+  },[i18n.language])
+  const getQuestionName = (cat) => {
+    switch (i18n.language) {
+      case 'ar':
+        return cat.questionAr || '';
+      case 'en':
+        return cat.questionEn || '';
+      case 'fr':
+      default:
+        return cat.question || '';
+    }
+  };
+  const getReponseName = (cat) => {
+    switch (i18n.language) {
+      case 'ar':
+        return cat.reponseAr || '';
+      case 'en':
+        return cat.reponseEn || '';
+      case 'fr':
+      default:
+        return cat.reponse || '';
+    }
+  };
   const openModal = (type, item) => {
     setModalType(type);
     setCurrentItem(item);
-    setQuestion({...question , question:item.question , reponse:item.reponse})
+    setQuestion({...question , question:item.question ,questionAr:item.questionAr,questionEn:item.questionEn, reponse:item.reponse , reponseAr:item.reponseAr ,reponseEn:item.reponseEn })
   };
   const handleDelete =  (id) => {
     Swal.fire({
@@ -90,9 +116,11 @@ const updateQuestion = async(e , id) =>{
                   {isMobile ? (
                     <table className="table" id="table1">
                       <tbody>
-                        <tr>
+                       {questions&& questions.map((item)=>(
+                        <>
+                         <tr>
                           <td>{t("La question")}</td>
-                          <td>{t("Lorem Lorem")}</td>
+                          <td>{getQuestionName(item)}</td>
                         </tr>
                         <tr>
                           <td>{t("Date de création")}</td>
@@ -130,13 +158,13 @@ const updateQuestion = async(e , id) =>{
                         <tr>
                           <td>{t("Voir")}</td>
                           <td>
-                            <i className="fa-solid fa-eye" data-bs-toggle="modal" data-bs-target="#viewModal"></i>
+                            <i className="fa-solid fa-eye" data-bs-toggle="modal" data-bs-target="#viewModal" onClick={() => openModal('view', item)}></i>
                           </td>
                         </tr>
                         <tr>
                           <td>{t("Editer")}</td>
                           <td>
-                            <i className="fa-solid fa-pen-to-square" data-bs-toggle="modal" data-bs-target="#editModal"></i>
+                            <i className="fa-solid fa-pen-to-square" data-bs-toggle="modal" data-bs-target="#editModal"  onClick={() => openModal('edit', item)}></i>
                           </td>
                         </tr>
                         <tr>
@@ -145,6 +173,8 @@ const updateQuestion = async(e , id) =>{
                             <i onClick={handleDelete} className="fa-solid fa-trash"></i>
                           </td>
                         </tr>
+                        </>
+                       ))}
                       </tbody>
                     </table>
                   ) : (
@@ -161,7 +191,7 @@ const updateQuestion = async(e , id) =>{
                       <tbody>
                         {questions && questions.map((item)=>(
                           <tr>
-                            <td>{item.question}</td>
+                            <td>{getQuestionName(item)}</td>
                             <td>{item.updatedAt.split("T")[0]}</td>
                             <th>
                               <i className="fa-solid fa-eye" data-bs-toggle="modal" data-bs-target="#viewModal" onClick={() => openModal('view', item)}></i>
@@ -196,7 +226,7 @@ const updateQuestion = async(e , id) =>{
             </div>
             <div className="modal-body">
               <h6>la reponse :</h6>
-              <p>{currentItem?.reponse}</p>
+              <p>{currentItem?getReponseName(currentItem):""}</p>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">{t("Fermer")}</button>
@@ -225,6 +255,22 @@ const updateQuestion = async(e , id) =>{
                       <div className="form-group has-icon-left">
                         <label htmlFor="answer" className="form-label">{t("La réponse")}</label>
                         <textarea value={question.reponse} onChange={e=>setQuestion({...question , reponse:e.target.value})} className="form-control" id="answer" rows={3}></textarea>
+                      </div>
+                      <div className="form-group has-icon-left">
+                        <label htmlFor="answer" className="form-label">{t("La question(arabe)")}</label>
+                        <textarea value={question.questionAr} onChange={e=>setQuestion({...question , questionAr:e.target.value})} className="form-control" id="answer" rows={3}></textarea>
+                      </div>
+                      <div className="form-group has-icon-left">
+                        <label htmlFor="answer" className="form-label">{t("La réponse(arabe)")}</label>
+                        <textarea value={question.reponseAr} onChange={e=>setQuestion({...question , reponseAr:e.target.value})} className="form-control" id="answer" rows={3}></textarea>
+                      </div>
+                      <div className="form-group has-icon-left">
+                        <label htmlFor="answer" className="form-label">{t("La question(englais)")}</label>
+                        <textarea value={question.questionEn} onChange={e=>setQuestion({...question , questionEn:e.target.value})} className="form-control" id="answer" rows={3}></textarea>
+                      </div>
+                      <div className="form-group has-icon-left">
+                        <label htmlFor="answer" className="form-label">{t("La réponse(englais)")}</label>
+                        <textarea value={question.reponseEn} onChange={e=>setQuestion({...question , reponseEn:e.target.value})} className="form-control" id="answer" rows={3}></textarea>
                       </div>
                     </div>
                   </div>

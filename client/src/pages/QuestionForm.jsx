@@ -4,7 +4,7 @@ import axios from "axios";
 import Cookies from 'js-cookie'
 function QuestionForm() {
   const token = Cookies.get('token');
-  const [question , setQuestion]= useState({question:"" ,reponse:"" })
+  const [question , setQuestion]= useState({question:"" ,questionAr:"",questionEn:"", reponse:"" , reponseAr:"" ,reponseEn:"" })
   const { t } = useTranslation();
   const addQuestion = async(e)=>{
     e.preventDefault();
@@ -41,14 +41,58 @@ function QuestionForm() {
                           />
                         </div>
                         <div className="form-group has-icon-left">
-                          <label htmlFor="reponse" className="form-label">
+                          <label htmlFor="question" className="form-label">
                             {t("La réponse")}
+                          </label>
+                          <textarea
+                            className="form-control"
+                            id="question"
+                            rows={3}
+                            onChange={e=>setQuestion({...question , reponse:e.target.value})}
+                          />
+                        </div>
+                        <div className="form-group has-icon-left">
+                          <label htmlFor="reponse" className="form-label">
+                            {t("La question(arabe)")}
                           </label>
                           <textarea
                             className="form-control"
                             id="reponse"
                             rows={3}
-                            onChange={e=>setQuestion({...question , reponse:e.target.value})}
+                            onChange={e=>setQuestion({...question , questionAr:e.target.value})}
+                          />
+                        </div>
+                        <div className="form-group has-icon-left">
+                          <label htmlFor="reponse" className="form-label">
+                            {t("La réponse(arabe)")}
+                          </label>
+                          <textarea
+                            className="form-control"
+                            id="reponse"
+                            rows={3}
+                            onChange={e=>setQuestion({...question , reponseAr:e.target.value})}
+                          />
+                        </div>
+                        <div className="form-group has-icon-left">
+                          <label htmlFor="reponse" className="form-label">
+                            {t("La question(eng)")}
+                          </label>
+                          <textarea
+                            className="form-control"
+                            id="reponse"
+                            rows={3}
+                            onChange={e=>setQuestion({...question , questionEn:e.target.value})}
+                          />
+                        </div>
+                        <div className="form-group has-icon-left">
+                          <label htmlFor="reponse" className="form-label">
+                            {t("La reponse(eng)")}
+                          </label>
+                          <textarea
+                            className="form-control"
+                            id="reponse"
+                            rows={3}
+                            onChange={e=>setQuestion({...question , reponseEn:e.target.value})}
                           />
                         </div>
                       </div>

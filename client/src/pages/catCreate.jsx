@@ -8,7 +8,7 @@ import Cookies from 'js-cookie'
 const CatCreate = () => {
   const token = Cookies.get('token')
   const [isEnabled, setIsEnabled] = useState(false);
-  const [category, setcategory] = useState({nomCategorie:"" , icon:""});
+  const [category, setcategory] = useState({nomCategorieArabe:"" ,nomCategorieEnglish:"",nomCategorie:"" ,icon:""});
   const [inputs, setInputs] = useState([]);
   const state = useContext(GlobalState);
   const { t } = useTranslation();
@@ -37,13 +37,10 @@ const CatCreate = () => {
       const res = await axios.post(
         "http://localhost:8081/api/categories/addCategorie",
         category, // Send the data as a JSON object
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            headers : {Authorization: `Bearer ${token}`}  // Set the content type to application/json
-          }
-        }
-      );      console.log(res.data);
+       
+    
+            {headers : {Authorization: `Bearer ${token}`}}  // Set the content type to application/json
+      );     console.log(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -65,6 +62,28 @@ const CatCreate = () => {
                 <label htmlFor="basicInput">{t("Libellé")}</label>
                 <input
                   onChange={(e) => setcategory({...category , nomCategorie:e.target.value})}
+                    
+                  type="text"
+                  className="form-control"
+                  id="basicInput"
+                  placeholder="Enter text"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="basicInput">{t("Libellé(englais)")}</label>
+                <input
+                  onChange={(e) => setcategory({...category , nomCategorieEnglish:e.target.value})}
+                    
+                  type="text"
+                  className="form-control"
+                  id="basicInput"
+                  placeholder="Enter text"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="basicInput">{t("Libellé(arabe)")}</label>
+                <input
+                  onChange={(e) => setcategory({...category , nomCategorieArabe:e.target.value})}
                     
                   type="text"
                   className="form-control"

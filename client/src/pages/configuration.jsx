@@ -4,13 +4,37 @@ import "choices.js/public/assets/styles/choices.css";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Swal from "sweetalert2";
+import axios from "axios";
+import Cookies from 'js-cookie';
 
 function Configuration() {
+  const token = Cookies.get('token');
   const { t } = useTranslation();
   const [showEmail1, setShowEmail1] = useState(true);
   const [showEmail2, setShowEmail2] = useState(true);
   const [showFac, setShowFac] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const fileInputRef = React.createRef();
+
+  const [dataConfig, setDataConfig] = useState({
+    coutClic: 0,
+    coutParticipation: 0,
+    valeurMajoration: [],
+    facilité: false,
+    valeurFacilité: 0,
+    datedeclenchement: Date.now(),
+    datefermeture: Date.now(),
+    unité: "MOIS",
+    nombreParticipantAttendu: 0,
+    nombreMois: 0,
+    extensionTime: 0,
+    ContractEnchere: "",          // French contract
+    ContractEnchereAr: "",       // Arabic contract
+    ContractEnchereEn: "",       // English contract
+    autoFinancement: 0
+  });
+
+  const [dateScheduled, setDateScheduled] = useState(Date.now());
 
   const handleCheckbox1Change = () => {
     setShowEmail1(!showEmail1);
@@ -38,28 +62,159 @@ function Configuration() {
       closeOnCancel: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        // Call deleteItem function
         deleteItem();
         Swal.fire({
           title: "Annuler(e) !",
           text: "Votre élément a été supprimé.",
           icon: "success",
-          iconColor:"black",
+          iconColor: "black",
           confirmButtonColor: "#b0210e", // Change to your desired color
           confirmButtonText: "OK"
-        });      } else {
+        });
+      } else {
         Swal.fire({
           title: "Annulé",
           text: "Votre élément est en sécurité :)",
           icon: "error",
           confirmButtonColor: "#b0210e", // Change to your desired color
           confirmButtonText: "OK"
-        });      }
+        });
+      }
     });
   };
+
   const deleteItem = () => {
     // Implement your delete logic here
   };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setDataConfig(prevState => ({
+      ...prevState,
+      ContractEnchere: file // French contract
+    }));
+  };
+
+  const handleArabicFileChange = (e) => {
+    const file = e.target.files[0];
+    setDataConfig(prevState => ({
+      ...prevState,
+      ContractEnchereAr: file // Arabic contract
+    }));
+  };
+
+  const handleEnglishFileChange = (e) => {
+    const file = e.target.files[0];
+    setDataConfig(prevState => ({
+      ...prevState,
+      ContractEnchereEn: file // English contract
+    }));
+  };
+
+  const addBidConfig = async () => {
+    try {
+      const formData = new FormData();
+      Object.keys(dataConfig).forEach(key => {
+        formData.append(key, dataConfig[key]);
+      });
+
+      // Add IdEnchere to FormData
+      formData.append('IdEnchere', localStorage.getItem('idEnchereConf'));
+
+      // Add ContractEnchere file to FormData
+      if (dataConfig.ContractEnchere) {
+        formData.append('ContractEnchere', dataConfig.ContractEnchere);
+      } else {
+        console.error('ContractEnchere file is missing.');
+        return;
+      }
+
+      // Add ContractEnchereAr file to FormData
+      if (dataConfig.ContractEnchereAr) {
+        formData.append('ContractEnchereAr', dataConfig.ContractEnchereAr);
+      } else {
+        console.error('ContractEnchereAr file is missing.');
+        return;
+      }
+
+      // Add ContractEnchereEn file to FormData
+      if (dataConfig.ContractEnchereEn) {
+        formData.append('ContractEnchereEn', dataConfig.ContractEnchereEn);
+      } else {
+        console.error('ContractEnchereEn file is missing.');
+        return;
+      }
+
+      // Send the request with FormData
+      const res = await axios.post(
+        "http://localhost:8081/api/bid/publishBidNow",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      console.log(res);
+      localStorage.removeItem('idEnchereConf');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addScheduledbid = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      Object.keys(dataConfig).forEach(key => {
+        formData.append(key, dataConfig[key]);
+      });
+
+      // Add IdEnchere and publicationDate to FormData
+      formData.append('IdEnchere', localStorage.getItem('idEnchereConf'));
+      formData.append('publicationDate', dateScheduled);
+
+      // Send the request with FormData
+      const res = await axios.post(
+        "http://localhost:8081/api/bid/scheduleBidPublication",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      console.log(res.data);
+      localStorage.removeItem('idEnchereConf');
+    } catch (error) {
+      console.error("Error scheduling bid:", error);
+    }
+  };
+
+  // State for valeurMajoration
+  const [valeurMajoration, setValeurMajoration] = useState([]);
+  const [newValue, setNewValue] = useState('');
+
+  const handleAddValue = () => {
+    if (newValue) {
+      setValeurMajoration([...valeurMajoration, parseInt(newValue)]);
+      setNewValue(''); // Clear input field after adding
+    }
+  };
+
+  // Handler for input change
+  const handleInputChange = (e) => {
+    setNewValue(e.target.value);
+  };
+
+  const handleDeleteValue = (index) => {
+    setValeurMajoration(valeurMajoration.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="content-container">
       <div id="main">
@@ -85,14 +240,12 @@ function Configuration() {
                           <div className="row">
                             <div className="col-12">
                               <div className="form-group">
-                                <label htmlFor="participation-cost">
-                                  {t("Cout Du Participation")}
-                                </label>
+                                <label htmlFor="participation-cost">{t("Cout Du Participation")}</label>
                                 <input
+                                  onChange={e => setDataConfig({ ...dataConfig, coutParticipation: e.target.value })}
                                   type="number"
                                   id="participation-cost"
                                   className="form-control"
-                                  name="participation-cost"
                                   placeholder={t("Ecrire Ici")}
                                   required
                                 />
@@ -100,14 +253,12 @@ function Configuration() {
                             </div>
                             <div className="col-12">
                               <div className="form-group">
-                                <label htmlFor="click-cost">
-                                  {t("Cout Du Clic")}
-                                </label>
+                                <label htmlFor="click-cost">{t("Cout Du Clic")}</label>
                                 <input
+                                  onChange={e => setDataConfig({ ...dataConfig, coutClic: e.target.value })}
                                   type="number"
                                   id="click-cost"
                                   className="form-control"
-                                  name="click-cost"
                                   placeholder={t("Ecrire Ici")}
                                   required
                                 />
@@ -115,43 +266,88 @@ function Configuration() {
                             </div>
                             <div className="col-12">
                               <div className="form-group">
-                                <label htmlFor="increment-value">
-                                  {t("Valeur De Majoration")}
-                                </label>
+                                <label htmlFor="extension-time">{t("Extension Time")}</label>
                                 <input
+                                  onChange={e => setDataConfig({ ...dataConfig, extensionTime: e.target.value })}
                                   type="number"
-                                  id="increment-value"
+                                  id="extension-time"
                                   className="form-control"
-                                  name="increment-value"
                                   placeholder={t("Ecrire Ici")}
                                   required
                                 />
                               </div>
                             </div>
-                            <div className="col-12 checkbox">
-                              <input
-                                type="checkbox"
-                                id="checkbox1"
-                                className="col-1 form-check-input"
-                                checked={showEmail1}
-                                onChange={handleCheckbox1Change}
-                              />
-                              <span>Remboursement</span>
-                            </div>
-                            {showEmail1 && (
-                              <div className="col-12">
+                            <div className="col-12">
+                              <div className="form-group">
+                                <label htmlFor="auto-financement">{t("Auto Financement")}</label>
                                 <input
-                                  type="text"
-                                  id="email-id-vertical1"
-                                  className="col-6 form-control"
-                                  name="email-id"
-                                  placeholder="Ecrire Ici"
+                                  onChange={e => setDataConfig({ ...dataConfig, autoFinancement: e.target.value })}
+                                  type="number"
+                                  id="auto-financement"
+                                  className="form-control"
+                                  placeholder={t("Ecrire Ici")}
                                   required
                                 />
                               </div>
-                            )}
-                            <br />
-                            <br />
+                            </div>
+                            <div className="col-12">
+                              <div className="form-group">
+                                <label htmlFor="contract">{t("Contrat (Français)")}</label>
+                                <input
+                                  ref={fileInputRef}
+                                  onChange={handleFileChange}
+                                  type="file"
+                                  id="contract"
+                                  className="form-control"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className="col-12">
+                              <div className="form-group">
+                                <label htmlFor="contractAr">{t("Contrat (Arabe)")}</label>
+                                <input
+                                  type="file"
+                                  onChange={handleArabicFileChange}
+                                  id="contractAr"
+                                  className="form-control"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className="col-12">
+                              <div className="form-group">
+                                <label htmlFor="contractEn">{t("Contrat (Anglais)")}</label>
+                                <input
+                                  type="file"
+                                  onChange={handleEnglishFileChange}
+                                  id="contractEn"
+                                  className="form-control"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className='col-12'>
+                              <label htmlFor="valeur-majoration">{t("Valeur de majoration")}</label><br />
+                              <input
+                                type="number"
+                                value={newValue}
+                                onChange={handleInputChange}
+                                placeholder="Add valeurMajoration"
+                              />
+                              <button className="btn btn-primary ms-1" type="button" onClick={handleAddValue}>Add</button>
+                              {/* Display the list */}
+                              <ul>
+                                {valeurMajoration.map((value, index) => (
+                                  <li key={index}>
+                                    {value}
+                                    <button className="btn btn-secondary ms-3" type="button" onClick={() => handleDeleteValue(index)}>
+                                      X
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
                             <div className="row">
                               <div className="col-12 checkbox">
                                 <input
@@ -166,10 +362,10 @@ function Configuration() {
                               {showEmail2 && (
                                 <div className="col-6">
                                   <input
+                                    onChange={e => setDataConfig({ ...dataConfig, valeurFacilité: e.target.value })}
                                     type="number"
                                     id="email-id-vertical2"
                                     className="col-6 form-control"
-                                    name="email-id"
                                     placeholder="Ecrire Ici"
                                     required
                                   />
@@ -182,28 +378,49 @@ function Configuration() {
                                   className="col-6 form-group"
                                 >
                                   <select
+                                    onChange={e => setDataConfig({ ...dataConfig, unité: e.target.value })}
                                     className="form-select"
                                     id="basicSelect"
                                     required
                                   >
-                                    <option>Mois</option>
-                                    <option>L'année</option>
+                                    <option value={"MOIS"}>Mois</option>
+                                    <option value={"ANNEE"}>L'année</option>
                                   </select>
                                 </fieldset>
                               )}
                             </div>
-
                             <div className="col-12">
+                              <label htmlFor="expected-participants">{t("Nb attendu des participants")}</label>
                               <div className="form-group">
-                                <label htmlFor="number-of-months">
-                                  {t("Nb De Mois")}
-                                </label>
                                 <input
+                                  onChange={e => setDataConfig({ ...dataConfig, nombreParticipantAttendu: e.target.value })}
                                   type="number"
-                                  id="number-of-months"
+                                  id="expected-participants"
                                   className="form-control"
-                                  name="number-of-months"
-                                  placeholder={t("Ecrire Ici")}
+                                  placeholder={t("Écrivez ici")}
+                                  maxLength={25}
+                                  required
+                                />
+                              </div>
+                              <label htmlFor="launch-date">{t("Date de Lancement")}</label>
+                              <div className="form-group">
+                                <input
+                                  onChange={e => setDataConfig({ ...dataConfig, datedeclenchement: e.target.value })}
+                                  type="datetime-local"
+                                  id="launch-date"
+                                  className="form-control"
+                                  placeholder={t("Écrivez ici")}
+                                  required
+                                />
+                              </div>
+                              <label htmlFor="closing-date">{t("Date de Fermeture")}</label>
+                              <div className="form-group">
+                                <input
+                                  onChange={e => setDataConfig({ ...dataConfig, datefermeture: e.target.value })}
+                                  type="datetime-local"
+                                  id="closing-date"
+                                  className="form-control"
+                                  placeholder={t("Écrivez ici")}
                                   required
                                 />
                               </div>
@@ -212,116 +429,54 @@ function Configuration() {
                         </div>
                       </form>
                     </div>
+                    <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                      <Modal.Header closeButton>
+                        <Modal.Title>{t("Planifier")}</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <form onSubmit={e => addScheduledbid(e)} className="mb-3">
+                          <label htmlFor="dateInput" className="form-label">{t("Date")}</label>
+                          <input onChange={e => setDateScheduled(e.target.value)} type="datetime-local" className="form-control" id="dateInput" />
+                          <Button variant="secondary" onClick={() => setShowModal(false)}>
+                            {t("Fermer")}
+                          </Button>
+                          <Button type='submit' variant="primary">
+                            {t("Planifier")}
+                          </Button>
+                        </form>
+                      </Modal.Body>
+                    </Modal>
+                    <br />
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-primary ms-1"
+                        onClick={() => setShowModal(true)}
+                      >
+                        <span className="d-none d-sm-block">{t("Planifier")}</span>
+                      </button>
+                      <button
+                        onClick={addBidConfig}
+                        type="button"
+                        className="btn btn-primary ms-1"
+                      >
+                        <span className="d-none d-sm-block">{t("Publier")}</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary ms-1"
+                        onClick={() => handleCloseModal()}
+                      >
+                        <span className="d-none d-sm-block">{t("Annuler")}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <br/>
-            <br/>
-            <div className="card">
-              <div
-              style={{ backgroundColor: "white", padding: 20 }}
-              className="modal-content"
-            >
-              <div className="modal-header">
-                <h2 className="new-price" id="myModalLabel33">
-                  {t("Ajouter une nouvelle Configuration")}
-                </h2>
-              </div>
-              <form action="#">
-                <div className="modal-body">
-                  <label htmlFor="expected-participants">
-                    {t("Nb attendu des participants")}
-                  </label>
-                  <div className="form-group">
-                    <input
-                      type="number"
-                      id="expected-participants"
-                      className="form-control"
-                      placeholder={t("Écrivez ici")}
-                      maxLength={25}
-                      required
-                    />
-                  </div>
-                  <label htmlFor="launch-date">{t("Date de Lancement")}</label>
-                  <div className="form-group">
-                    <input
-                      type="datetime-local"
-                      id="launch-date"
-                      className="form-control"
-                      placeholder={t("Écrivez ici")}
-                      required
-                    />
-                  </div>
-                  <label htmlFor="closing-date">{t("Date de Fermeture")}</label>
-                  <div className="form-group">
-                    <input
-                      type="datetime-local"
-                      id="closing-date"
-                      className="form-control"
-                      placeholder={t("Écrivez ici")}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-primary ms-1"
-                    onClick={handleOpenModal}
-                  >
-                    <span className="d-none d-sm-block">{t("Planifier")}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary ms-1"
-                  >
-                    <span className="d-none d-sm-block">{t("Publier")}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary ms-1"
-                  >
-                    <span className="d-none d-sm-block">{t("Enregister")}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary ms-1"
-                    onClick={handleDelete}
-                  >
-                    <span className="d-none d-sm-block">{t("Annuler")}</span>
-                  </button>
-                </div>
-              </form>
               </div>
             </div>
           </section>
         </div>
       </div>
-
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{t("Planifier")}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="mb-3">
-            <label htmlFor="dateInput" className="form-label">{t("Date")}</label>
-            <input type="date" className="form-control" id="dateInput" />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="timeInput" className="form-label">{t("Heure")}</label>
-            <input type="time" className="form-control" id="timeInput" />
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            {t("Fermer")}
-          </Button>
-          <Button variant="primary">
-            {t("Planifier")}
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }
